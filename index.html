@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Python backend: 16 weeks to Scolaris v1</title>
+<style>
+:root{--bg:#F2F5F3;--card:#FFFFFF;--ink:#16211D;--mute:#5E6B66;--line:#D5DDD9;--blue:#2B5CAB;--blue-bg:#E4ECF8;--gold:#E3B01E;--ok:#2F8F5B;--warn:#B4561E;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F171C;--card:#17222A;--ink:#E8EEEA;--mute:#92A19A;--line:#2A3943;--blue:#7BA6EE;--blue-bg:#1D2E45;--gold:#F2C230;--ok:#4DBB82;--warn:#E8895A;color-scheme:dark}}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+h1,h2,h3{font-family:Georgia,"Iowan Old Style",serif;font-weight:700;line-height:1.2;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding:28px 18px 70px}
+h1{font-size:clamp(28px,5vw,40px);letter-spacing:-.5px}
+h2{font-size:22px;margin:38px 0 12px}
+p{margin:0}
+.sub{color:var(--mute);margin-top:8px;max-width:60ch}
+.top{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:flex-end;margin-top:22px}
+.big{font-family:Georgia,serif;font-size:34px;font-weight:700;line-height:1}
+.lbl{font-size:13px;color:var(--mute);margin-top:4px}
+input[type=date],input[type=number]{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 8px}
+input:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.strip{display:grid;grid-template-columns:repeat(16,1fr);gap:3px;margin-top:22px}
+.cell{height:30px;border-radius:3px;background:var(--line);position:relative;overflow:hidden;cursor:pointer;border:0;padding:0}
+.cell i{position:absolute;left:0;bottom:0;width:100%;background:var(--blue)}
+.cell.full i{background:var(--gold)}
+.cell.now{outline:2px solid var(--ink);outline-offset:1px}
+.phases{display:grid;grid-template-columns:3fr 2fr 4fr 3fr 4fr;gap:3px;margin-top:6px;font-size:12px;color:var(--mute)}
+.phases span{border-top:2px solid var(--mute);padding-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.now-card{background:var(--blue-bg);border-radius:10px;padding:18px;margin-top:26px}
+.now-card h3{font-size:19px}
+.now-card p{margin-top:6px}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:8px}
+summary{cursor:pointer;padding:13px 16px;display:flex;gap:12px;align-items:baseline;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary .n{font-family:Georgia,serif;font-weight:700;min-width:58px}
+summary .t{flex:1;font-weight:600}
+summary .pct{font-size:13px;color:var(--mute);white-space:nowrap}
+.body{padding:2px 16px 16px;border-top:1px solid var(--line)}
+.body p.ship{margin:12px 0 4px;font-weight:600}
+.chk{display:flex;gap:10px;align-items:flex-start;padding:5px 0;cursor:pointer}
+.chk input{margin-top:5px;accent-color:var(--blue);width:16px;height:16px;flex-shrink:0}
+.chk.done span{color:var(--mute);text-decoration:line-through}
+.mh{margin:12px 0 4px;font-weight:600}
+.mat{margin:0 0 8px;padding-left:20px}
+.mat li{margin:3px 0}
+.mat a{color:var(--blue)}
+.hrs{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px;font-size:14px}
+.hrs input{width:78px}
+.floor{font-weight:600}.floor.ok{color:var(--ok)}.floor.low{color:var(--warn)}
+.gate{margin-top:12px;padding:10px 12px;border-left:3px solid var(--gold);background:var(--bg);font-size:15px}
+.day{display:flex;height:34px;border-radius:6px;overflow:hidden;margin:12px 0 8px;font-size:13px;font-weight:600;color:#fff}
+.day div{display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:6px 18px;font-size:15px}
+ol.rules{padding-left:20px;margin:0}
+ol.rules li{margin-bottom:8px;max-width:64ch}
+.btn{font:inherit;font-size:14px;padding:7px 12px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:6px;cursor:pointer;margin-right:6px}
+.btn.danger{color:var(--warn)}
+.blunt{border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--card);max-width:64ch}
+@media (max-width:560px){.strip{gap:2px}.cell{height:26px}.phases{font-size:10px}summary .n{min-width:48px}}
+@media (prefers-reduced-motion:no-preference){.cell i{transition:height .3s}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Python backend: 16 weeks to Scolaris v1</h1>
+<p class="sub">Forty hours a week, locked plan, with automation and web scraping built in. You finish with public repos, a live lead pipeline, a deployed API and a school-ready backend. Start: Tuesday, Nov 17. End: Monday, Mar 8.</p>
+
+<div class="top">
+  <div><div class="big" id="wk">–</div><div class="lbl" id="wkl"></div></div>
+  <div><div class="big" id="pct">0%</div><div class="lbl">of all tasks done</div></div>
+  <div><div class="big" id="tot">0</div><div class="lbl">Python hours logged</div></div>
+  <label><div class="lbl" style="margin:0 0 4px">Start date</div><input type="date" id="start"></label>
+</div>
+
+<div class="strip" id="strip" role="list"></div>
+<div class="phases"><span>Foundations</span><span>Data, web</span><span>APIs</span><span>Production</span><span>Scolaris</span></div>
+
+<div class="now-card" id="now"></div>
+
+<h2>The 16 weeks</h2>
+<div id="weeks"></div>
+
+<h2>A working day</h2>
+<p class="sub" style="margin-top:0">Five working days a week, 8 hours each. Build comes first; read docs when you’re stuck, not in advance.</p>
+<div class="day" role="img" aria-label="1.5 hours learn, 5 hours build, 1 hour practice, 0.5 hours log">
+  <div style="flex:1.5;background:#2B5CAB">Learn 1.5h</div>
+  <div style="flex:5;background:#2F8F5B">Build 5h</div>
+  <div style="flex:1;background:#8A6A12">Practice 1h</div>
+  <div style="flex:.5;background:#5E6B66"></div>
+</div>
+<div class="legend">
+  <p><b>Learn:</b> course and docs</p>
+  <p><b>Build:</b> the week’s project</p>
+  <p><b>Practice:</b> NeetCode, easy to medium</p>
+  <p><b>Last 30 min:</b> log hours, commit</p>
+</div>
+
+<h2>Rules</h2>
+<ol class="rules">
+  <li><b>The plan is locked.</b> The only allowed change is at the Week 8 checkpoint.</li>
+  <li><b>Two commits a day.</b> No commits means the day didn’t count.</li>
+  <li><b>Friday demo.</b> Show the week’s output to someone, even as a screen recording.</li>
+  <li><b>Scrape responsibly.</b> Public business information only, respect robots.txt and each site’s terms, slow requests down, and don’t hoard or message people’s personal data.</li>
+  <li><b>Floor of 25 Python hours a week.</b> A short week stays short. Don’t stack the missing hours onto weekends.</li>
+</ol>
+
+<h2>The blunt part</h2>
+<div class="blunt">
+  <p>Forty hours of Python on top of client delivery and pastoral work won’t happen every week. Decide now how much of the 40 is Python and how much is client work, and protect the floor.</p>
+  <p style="margin-top:10px">Automation and scraping now run through weeks 2 to 6 and 9 to 15, so those weeks are denser. If you fall behind, cut in this order: Playwright, Telegram alerts, Excel export. Don’t cut tests or deployment.</p>
+  <p style="margin-top:10px">Payment gateways and PHP/Laravel are left out on purpose. They belong in month 5 and later, once this stack is solid.</p>
+</div>
+
+<h2>Your data</h2>
+<p class="sub" style="margin:0 0 12px">Progress saves in this browser only. Export a backup now and then.</p>
+<button class="btn" id="exp">Export backup</button>
+<label class="btn" style="display:inline-block">Import backup<input type="file" accept="application/json" id="imp" style="display:none"></label>
+<button class="btn danger" id="reset">Reset progress</button>
+</div>
+
+<script>
+var W=[
+[1,"Python core","Fast week: you’ve already done loops. Weeks run Tuesday to Monday, five working days each.",["Functions, scope, arguments","Lists, dicts, sets, comprehensions","Files and exceptions","CS50P problem sets"],"3 small CLI tools"],
+[2,"OOP, tooling, Git and file automation","",["Classes and modules","venv, pip, pathlib, JSON and CSV","Git workflow and pytest","Automating files: rename, sort, back up"],"Expense tracker CLI with tests, plus a script that sorts your Downloads folder"],
+[3,"Idiomatic Python and scheduled scripts","Gate: you can build a tested CLI without a tutorial.",["Decorators, generators, context managers","Type hints and logging","Regex","Scheduling with cron or Task Scheduler","Sending email with smtplib"],"Refactored tracker, plus a script that runs daily and emails you a summary"],
+[4,"Web scraping I","",["HTTP basics and the requests library","BeautifulSoup and CSS selectors","Pagination, headers, delays and retries","Responsible scraping: robots.txt, site terms, rate limits"],"Scraper for a public business directory, exporting clean CSV"],
+[5,"Scraping II and SQL","",["SQLite, then PostgreSQL","Joins, indexes, transactions","Saving scraped data without duplicates","Detecting changes between runs","JavaScript-heavy sites with Playwright"],"Scraper writing to a database, deduplicated, flagging what changed"],
+[6,"FastAPI basics and calling APIs","",["Routing and Pydantic validation","Auto-generated docs","Error responses","Using official APIs instead of scraping","Telegram bot alerts"],"Small CRUD API, plus a script that sends you a Telegram alert"],
+[7,"ORM and migrations","",["SQLModel or SQLAlchemy","Alembic migrations","Relationships"],"Noveltiq Client & Invoice API, part 1"],
+[8,"Authentication","Checkpoint: the only week the plan may change.",["Password hashing","JWT login","Roles and permissions"],"Part 2: login and role-based access"],
+[9,"Tests, API quality and documents","Gate: an API with auth and tests.",["API tests with pytest","Pagination and filtering","Consistent error handling","Generating PDF and Excel files"],"Part 3: tested API that produces PDF invoices"],
+[10,"Docker","",["Dockerfile","Docker Compose with API and Postgres","Environment config","Containerising a scraper"],"Containerised invoice API and scraper"],
+[11,"Redis, background jobs and pipelines","",["Redis basics","Background job queue","Caching","Scheduled jobs inside an app"],"Lead pipeline: scheduled scraper, database, daily digest sent to you"],
+[12,"Deploy and CI","Gate: something is live on the internet.",["Deploy to a host","GitHub Actions CI","Logging and security basics","Running scheduled jobs on a server"],"Invoice API and lead pipeline live, CI passing"],
+[13,"Scolaris foundation","",["Schema design","Auth for admin, teacher, student","Project structure and config"],"Scolaris backend skeleton"],
+[14,"Records and attendance","",["Student and class records","Attendance endpoints","Bulk import from Excel or CSV with validation","Tests for all of it"],"Working endpoints with tests, plus bulk student import"],
+[15,"CBT exams","",["Questions and attempts","Timers and scoring","Result sheets as PDF and Excel"],"Exam module with exportable result sheets"],
+[16,"Ship Scolaris v1","Gate: v1 works end to end.",["Hardening and bug fixes","API docs and README","Deploy"],"Scolaris v1 live, demoed to a real school"]
+];
+var R={
+1:[["CS50P: Harvard’s Python course (start here)","https://cs50.harvard.edu/python/"],["Python official tutorial","https://docs.python.org/3/tutorial/"],["NeetCode practice (easy problems)","https://neetcode.io/"]],
+2:[["Automate the Boring Stuff with Python (files, organising)","https://automatetheboringstuff.com/"],["pathlib reference","https://docs.python.org/3/library/pathlib.html"],["Pro Git book, chapters 1–3","https://git-scm.com/book/en/v2"],["pytest getting started","https://docs.pytest.org/en/stable/getting-started.html"]],
+3:[["Real Python: decorators primer","https://realpython.com/primer-on-python-decorators/"],["Real Python: generators","https://realpython.com/introduction-to-python-generators/"],["Python logging HOWTO","https://docs.python.org/3/howto/logging.html"],["Regex HOWTO","https://docs.python.org/3/howto/regex.html"],["schedule library","https://schedule.readthedocs.io/"],["smtplib reference","https://docs.python.org/3/library/smtplib.html"]],
+4:[["Automate the Boring Stuff (web scraping chapter)","https://automatetheboringstuff.com/"],["requests documentation","https://requests.readthedocs.io/"],["Beautiful Soup documentation","https://www.crummy.com/software/BeautifulSoup/bs4/doc/"],["How robots.txt works (Google)","https://developers.google.com/search/docs/crawling-indexing/robots/intro"]],
+5:[["SQLBolt: interactive SQL lessons (start here)","https://sqlbolt.com/"],["PostgreSQL Tutorial","https://www.postgresqltutorial.com/"],["Playwright for Python","https://playwright.dev/python/docs/intro"]],
+6:[["FastAPI official tutorial (start here)","https://fastapi.tiangolo.com/tutorial/"],["Pydantic documentation","https://docs.pydantic.dev/latest/"],["Telegram Bot API","https://core.telegram.org/bots/api"]],
+7:[["SQLModel tutorial","https://sqlmodel.tiangolo.com/"],["Alembic tutorial","https://alembic.sqlalchemy.org/en/latest/tutorial.html"],["FastAPI: SQL databases","https://fastapi.tiangolo.com/tutorial/sql-databases/"]],
+8:[["FastAPI security tutorial","https://fastapi.tiangolo.com/tutorial/security/"],["JWT introduction","https://jwt.io/introduction"]],
+9:[["FastAPI testing","https://fastapi.tiangolo.com/tutorial/testing/"],["ReportLab documentation (PDF)","https://docs.reportlab.com/"],["openpyxl documentation (Excel)","https://openpyxl.readthedocs.io/en/stable/"]],
+10:[["Docker: get started","https://docs.docker.com/get-started/"],["Docker Compose","https://docs.docker.com/compose/"],["The Twelve-Factor App","https://12factor.net/"]],
+11:[["Redis documentation","https://redis.io/docs/latest/"],["RQ: simple job queues","https://python-rq.org/"],["APScheduler documentation","https://apscheduler.readthedocs.io/"]],
+12:[["GitHub Actions quickstart","https://docs.github.com/en/actions/quickstart"],["FastAPI: deployment","https://fastapi.tiangolo.com/deployment/"]],
+13:[["FastAPI: bigger applications","https://fastapi.tiangolo.com/tutorial/bigger-applications/"],["PostgreSQL Tutorial (schema design)","https://www.postgresqltutorial.com/"]],
+14:[["openpyxl documentation","https://openpyxl.readthedocs.io/en/stable/"],["Pydantic validation","https://docs.pydantic.dev/latest/"],["FastAPI testing","https://fastapi.tiangolo.com/tutorial/testing/"]],
+15:[["FastAPI background tasks","https://fastapi.tiangolo.com/tutorial/background-tasks/"],["ReportLab documentation (PDF)","https://docs.reportlab.com/"]],
+16:[["The Twelve-Factor App","https://12factor.net/"],["FastAPI: deployment","https://fastapi.tiangolo.com/deployment/"]]
+};
+var KEY="py16-v2",S={start:"2026-11-17",done:{},hrs:{}};
+try{var r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function items(w){return w[3].concat([w[4],"10 commits across the week","Friday demo done"])}
+function prog(w){var it=items(w),n=0;it.forEach(function(_,i){if(S.done[w[0]+"-"+i])n++});return{n:n,t:it.length}}
+function startDate(){var p=S.start.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+function today(){var d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())}
+function curWeek(){return Math.floor(Math.round((today()-startDate())/864e5)/7)}
+var openWk=null;
+function render(){
+  var cw=curWeek(),inRange=cw>=0&&cw<16,days=Math.round((startDate()-today())/864e5);
+  $("start").value=S.start;
+  $("wk").textContent=inRange?"Week "+(cw+1)+" of 16":cw>=16?"Finished":"Not started";
+  $("wkl").textContent=inRange?"locked plan":cw<0?"starts in "+days+" day"+(days===1?"":"s"):"well done";
+  var all=0,dn=0,tot=0;
+  W.forEach(function(w){var p=prog(w);all+=p.t;dn+=p.n;tot+=+(S.hrs[w[0]]||0)});
+  $("pct").textContent=Math.round(dn/all*100)+"%";
+  $("tot").textContent=tot;
+  $("strip").innerHTML=W.map(function(w,i){var p=prog(w),f=p.n/p.t;
+    return '<button class="cell'+(f===1?' full':'')+(i===cw?' now':'')+'" data-go="'+w[0]+'" aria-label="Week '+w[0]+', '+Math.round(f*100)+'% done"><i style="height:'+f*100+'%"></i></button>'}).join("");
+  var wk=W[inRange?cw:cw<0?0:15];
+  $("now").innerHTML='<h3>'+(inRange?'This week: ':cw<0?'First up: ':'Last week: ')+'Week '+wk[0]+', '+esc(wk[1])+'</h3><p>Ship: '+esc(wk[4])+'</p>'+(wk[2]?'<p>'+esc(wk[2])+'</p>':'');
+  var focus=openWk||(inRange?W[cw][0]:1);
+  $("weeks").innerHTML=W.map(function(w){var p=prog(w),h=+(S.hrs[w[0]]||0);
+    return '<details id="w'+w[0]+'"'+(w[0]===focus?' open':'')+'><summary><span class="n">Week '+w[0]+'</span><span class="t">'+esc(w[1])+'</span><span class="pct">'+p.n+'/'+p.t+'</span></summary><div class="body">'
+    +'<p class="ship">Ship: '+esc(w[4])+'</p>'
+    +'<p class="mh">Materials (build first, read when stuck)</p><ul class="mat">'+(R[w[0]]||[]).map(function(m){return '<li><a href="'+m[1]+'" target="_blank" rel="noopener">'+esc(m[0])+'</a></li>'}).join("")+'</ul>'
+    +items(w).map(function(t,i){var id=w[0]+"-"+i,d=S.done[id];return '<label class="chk'+(d?' done':'')+'"><input type="checkbox" data-id="'+id+'"'+(d?' checked':'')+'><span>'+esc(t)+'</span></label>'}).join("")
+    +'<div class="hrs"><label>Python hours this week <input type="number" min="0" max="60" step="0.5" data-h="'+w[0]+'" value="'+(S.hrs[w[0]]||"")+'"></label><span class="floor '+(h>=25?'ok':'low')+'">'+(h>=25?'floor met':(25-h)+'h to the 25h floor')+'</span></div>'
+    +(w[2]&&w[2].indexOf("Gate")===0||w[2]&&w[2].indexOf("Checkpoint")===0?'<p class="gate">'+esc(w[2])+'</p>':'')
+    +'</div></details>'}).join("");
+}
+document.addEventListener("change",function(e){var t=e.target;
+  if(t.dataset.id){S.done[t.dataset.id]=t.checked;openWk=+t.dataset.id.split("-")[0];save();render()}
+  else if(t.dataset.h){S.hrs[t.dataset.h]=t.value;openWk=+t.dataset.h;save();render()}
+  else if(t.id==="start"&&t.value){S.start=t.value;save();render()}
+  else if(t.id==="imp"&&t.files[0]){var f=new FileReader();f.onload=function(){try{S=Object.assign({start:"2026-11-17",done:{},hrs:{}},JSON.parse(f.result));save();render()}catch(x){alert("That file isn’t a valid backup.")}};f.readAsText(t.files[0])}
+});
+document.addEventListener("click",function(e){var t=e.target.closest("[data-go]");
+  if(t){openWk=+t.dataset.go;render();var el=$("w"+openWk);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})}
+});
+$("exp").onclick=function(){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:"application/json"}));a.download="python-16-weeks-backup.json";a.click()};
+$("reset").onclick=function(){if(confirm("Clear all progress? This can’t be undone.")){S={start:S.start,done:{},hrs:{}};openWk=null;save();render()}};
+render();
+</script>
+</body>
+</html>
